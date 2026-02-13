@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Listings</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; background: #ddd; }
+        .card-body { padding: 15px; }
+        .price { color: #27ae60; font-weight: bold; font-size: 1.2em; }
+        .location { color: #7f8c8d; font-size: 0.9em; margin-bottom: 10px; }
+        .title { font-size: 1.1em; margin: 0 0 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .meta { display: flex; gap: 10px; font-size: 0.8em; color: #555; margin-bottom: 15px; }
+        .btn { display: inline-block; padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 4px; }
+        .btn:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>Property Listings</h1>
+    <div class="container">
+        {% for listing in listings %}
+        <div class="card">
+            {% if listing.image_folder and listing.image_urls %}
+                {% set img_url = listing.image_urls[0] %}
+                <!-- Serve local image if available, else remote.
+                     For local, we need to know the filename.
+                     Simpler: just list first downloaded image from folder if exists.
+                     But we don't strictly track filenames in JSON, just folder.
+                     Let's Assume standard naming or iterate in python.
+                     Actually, storage.download_images returns path.
+                     We can serve via /images/listing_id/image_1.jpg
+                -->
+                <img src="/images/{{ listing.listing_id }}/image_1.jpg" class="card-img" onerror="this.src='{{ listing.image_urls[0] }}'">
+            {% else %}
+                 <img src="" class="card-img">
+            {% endif %}
+
+            <div class="card-body">
+                <h3 class="title" title="{{ listing.title }}">{{ listing.title }}</h3>
+                <div class="location">{{ listing.location }}</div>
+                <div class="price">Rs {{ listing.price }}</div>
+                <div class="meta">
+                    {% if listing.bedrooms %}<span>{{ listing.bedrooms }} Beds</span>{% endif %}
+                    {% if listing.bathrooms %}<span>{{ listing.bathrooms }} Baths</span>{% endif %}
+                </div>
+                <a href="{{ listing.source_url }}" target="_blank" class="btn">View on Ikman</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
